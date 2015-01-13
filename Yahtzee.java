@@ -29,7 +29,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		for (int i=0; i < N_SCORING_CATEGORIES;i++) {
 			for (int j=1; j < nPlayers + 1; j++)  {
 				playerTurn(j);
-				playerScoring(j);
 			}
 		}
 		endGame();
@@ -43,27 +42,32 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		// do entire 3 roll sequence of player turn
 		
 		// first roll - roll all dice
+		display.printMessage("Message 1");
 		display.waitForPlayerToClickRoll(i);
 		
 		int[] diceArray = new int[N_DICE];
 		diceArray = rollAllDice(N_DICE);
 		display.displayDice(diceArray);
+		display.printMessage("Message 2");
 		
 		// Second roll - reroll selected dice - leave unchanged if none-selected
 		
 		display.waitForPlayerToSelectDice();
 		diceArray = checkSelectedDice(diceArray);
 		display.displayDice(diceArray);
+		display.printMessage("Message 3");
 		
 		// Third roll repeat second roll sequence
 		display.waitForPlayerToSelectDice();
 		diceArray = checkSelectedDice(diceArray);
 		display.displayDice(diceArray);
+		display.printMessage("Message 4");
 		
-		
-		
-	}
+		// select category and update score
+		playerScoring(i, diceArray);
 
+	}
+	
 	private int[] rollAllDice(int n) {
 		int[] array = new int[n];
 		for (int j = 0; j < n; j++)   {
@@ -81,8 +85,18 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		return diceArray;
 	}
 	
-	private void playerScoring(int i)	{
-		display.waitForPlayerToSelectCategory();
+	private void playerScoring(int i, int[] dice)	{
+		display.printMessage("Please select valid category");
+		
+		int category = display.waitForPlayerToSelectCategory();
+		// check with magicstub if dice match category
+		if (YahtzeeMagicStub.checkCategory(dice, category) == true) {
+			display.updateScorecard(category, i, 50); 
+		} else  { 
+			display.printMessage("This category is not valid for these dice - No score for you!");
+			display.updateScorecard(category, i, 0);
+		}	
+		
 	}
 	
 	private void endGame()   {
