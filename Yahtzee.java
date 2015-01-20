@@ -51,7 +51,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	private int rollDie()  {
 		return rgen.nextInt(1, 6);
 	}
-	
 	private void playerTurn(int i)  {
 		// do entire 3 roll sequence of player turn
 		
@@ -86,7 +85,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		playerScoring(i, category, diceArray);
 
 	}
-	
 	private int[] rollAllDice(int n) {
 		int[] array = new int[n];
 		for (int j = 0; j < n; j++)   {
@@ -94,7 +92,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return array;
 	}
-
 	private int[] checkSelectedDice(int[] diceArray) {
 		for (int k = 0; k < 5; k++)   {
 			if (display.isDieSelected(k) == true) {  
@@ -103,11 +100,11 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return diceArray;
 	}
-	
 	private void playerScoring(int i, int category, int[] dice)	{
 				
 		// check with magicstub if dice match category and give score is so. Zero if not matching category
-		if (YahtzeeMagicStub.checkCategory(dice, category) == true) {
+		// TODO implement my own checkCategory
+		if (checkCategory(dice, category) == true) {
 			int score = getCategoryScore(category);
 			scoreArray[i][category] = score;
 			display.updateScorecard(category, i, score); 
@@ -119,7 +116,61 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		calculateUpperCategoryScore(i);
 		calculateLowerCategoryScore(i);
 		calculateTotalScore(i);
+	}
+	private boolean checkCategory(int[] dice, int category) {
+		int[] checkArray = new int[7];   // need an array that can hold histogram of numbers 1 - 6 where the index matches the number
+		
+		checkArray = parseDiceArray(dice);
+		switch (category)  {
+		case ONES: case TWOS: case THREES: case FOURS: case FIVES: case SIXES: case CHANCE:
+			return true;
+		case THREE_OF_A_KIND:
+			return (checkParsedDiceArrayForEqualDice(checkArray, 3) || checkParsedDiceArrayForEqualDice(checkArray, 4) || checkParsedDiceArrayForEqualDice(checkArray, 5));
+		case FOUR_OF_A_KIND: 
+			return (checkParsedDiceArrayForEqualDice(checkArray, 4) || checkParsedDiceArrayForEqualDice(checkArray, 5));
+		case SMALL_STRAIGHT:
+			return checkSmallStraight(checkArray);
+		case LARGE_STRAIGHT:
+			// check that there are no equal dice by returning the not of checking for equal dice
+			return !(checkParsedDiceArrayForEqualDice(checkArray, 2) || checkParsedDiceArrayForEqualDice(checkArray, 3) || checkParsedDiceArrayForEqualDice(checkArray, 4) || checkParsedDiceArrayForEqualDice(checkArray, 5));
+		case FULL_HOUSE:
+			return (checkParsedDiceArrayForEqualDice(checkArray, 2) && checkParsedDiceArrayForEqualDice(checkArray, 3));
+		case YAHTZEE:
+			return checkParsedDiceArrayForEqualDice(checkArray, 5);
+		default:
+			return false;
+		}
+	}
+
+	private boolean checkSmallStraight(int[] array) {
+		if ((array[1] >= 1)  && (array[2] >= 1) && (array[3] >= 1) && (array[4] >= 1)) return true;
+		if ((array[2] >= 1)  && (array[3] >= 1) && (array[4] >= 1) && (array[5] >= 1)) return true;
+		if ((array[3] >= 1)  && (array[4] >= 1) && (array[5] >= 1) && (array[6] >= 1)) return true;
+		return false;
+	}
+
+	private boolean checkParsedDiceArrayForEqualDice(int[] checkArray, int num) {
+		// check the histogram array for greater than the number of equal dice for 3, 4, or 5 of a kind
+		boolean answer = false;
+ 		for (int i = 1; i < checkArray.length; i++)  {
+			if (checkArray[i] == num)  {  answer = true;  }
+		}     
+		return answer;
+	}
 	
+	private int[] parseDiceArray(int[] dArray)   {
+		/*  Convert the dice array to a histogram based on the number of each die
+		 * so 3 3 3 2 6 would become 0 0 1 3 0 0 1.
+		 * We use an array to 7 to be able to match the number 1-6 numerically. We will ignore element 0 during calculation
+		 */
+		
+		int[] newArr = new int[7];
+
+		for (int i = 0; i < N_DICE; i++)  {
+			newArr[dArray[i]] = newArr[dArray[i]] + 1;
+		}
+
+		return newArr;
 	}
 
 	private int getCategoryScore(int category) {
@@ -142,10 +193,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 			return 42;	
 		}
 	}
-
-	/**
-	 * @return
-	 */
 	private int sumAllDice() {
 		int score = 0;
 		for (int i=0; i < N_DICE; i++)  {
@@ -153,7 +200,6 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		}
 		return score;
 	}
-
 	private int countNumber(int Number) {
 		// this method determines the number of times a number appears in an array sums that number;
 		int score = 0;
