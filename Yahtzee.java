@@ -184,14 +184,14 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 		 * So array[1] contains the number of 1's in the dice array. array[2] contains the number of 2's and so forth
 		 */
 		
-		int[] historgramArray = new int[7];
+		int[] histogramArray = new int[7];
 
 		// iterate over the dice array and increment the histogram array based on the value of the dice array element dArray[i]
 		for (int i = 0; i < N_DICE; i++)  {
-			historgramArray[dArray[i]] = historgramArray[dArray[i]] + 1;
+			histogramArray[dArray[i]] = histogramArray[dArray[i]] + 1;
 		}
 
-		return historgramArray;
+		return histogramArray;
 	}
 
 	private int getCategoryScore(int category) {
