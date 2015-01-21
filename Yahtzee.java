@@ -102,8 +102,7 @@ public class Yahtzee extends GraphicsProgram implements YahtzeeConstants {
 	}
 	private void playerScoring(int i, int category, int[] dice)	{
 				
-		// check with magicstub if dice match category and give score is so. Zero if not matching category
-		// TODO implement my own checkCategory
+		// check if dice match category and give score is so. Zero if not matching category
 		if (checkCategory(dice, category) == true) {
 			int score = getCategoryScore(category);
 			scoreArray[i][category] = score;
